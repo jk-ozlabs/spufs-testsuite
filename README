@@ -1,0 +1,112 @@
+
+Running:
+
+ * ./run-tests
+ 	- to run all tests
+ * ./run-tests <test-dir>
+ 	- run all tests in <test-dir>
+ * ./run-tests <test-file>
+ 	- run a single test file
+
+ * The -c option will cause the test suite to continue on failures
+
+Writing tests:
+
+ * The test script looks for executables in the test/ directory that
+   have a name that starts with a number.
+
+ * Tests are run in order of their name.
+
+ * In its most basic format, we expect a return code of 0
+
+ * You can add a test.conf to the test directory to define additional behaviour
+   The format of this file is:
+   <test-name>: <options>
+
+   where options may be one or more of:
+   	expected_rc=<rc>	# expect a rc of <rc> instead of 0
+   	disabled=1		# disable the test
+	needs_root=1		# disable the test if run by a non-root user
+
+   for example, from the testsuite's own test.conf:
+   	01-fail: expected_rc=1
+	02-root: needs_root=1
+	03-skip: disabled=1
+
+   If a test is not listed in test.conf (or there is no test.conf), then
+   the default options will be used.
+
+ * Tests are run in a separate working directory, and have the test's build
+   directory in the PATH. If you need to create files, use the current working
+   directory.
+
+ * Each test should test the smallest amount of functionality as possible. Since
+   the tests are run in order, you can assume that all previously-tested
+   functionality is working.
+
+ * If you need to do tricky stuff in your test (eg checking for particular
+   output), use a shell (or python) script to launch your test and do the
+   necessary checking. Remember that only executables that start with numbers
+   are included in the test, so you can include utility programs that don't
+   start with a number.
+
+Makefiles:
+
+ * .. should be kept very simple.
+
+ * If you add a test that needs to be compiled, add it to the
+   Makefile in the same directory, in the 'tests' variable:
+
+	tests += 00-pass 01-fail 02-root 03-skip
+
+   The test will then be compiled using make's implicit rules. If your
+   test binary needs more than one .c file, use another target:
+
+	tests += sched_multiple
+
+	sched_multiple: sched_multiple.o sched_multiple_spe_embed.o
+
+ * If you add a directory, add it to tests/Makefile, in the 'dirs' variable"
+
+	dirs = 00-testsuite 01-context 02-gang
+
+   The directory will need (at least) a Makefile, and hopefully some tests :)
+
+ * Your makefile will be included by tests/Makefile.lib, and not executed
+   directly.
+
+ * If you need different compiler arguments, set (or better, append to) the
+   CFLAGS, CPPFLAGS and LDFLAGS variables.
+
+ * If you need to compile with LIBSPE2, the LIBSPE2_CFLAGS and LIBSPE2_LDFLAGS
+   variables are provided for convenience. Just do this:
+
+   	CFLAGS	+= $(LIBSPE2_CFLAGS)
+	LDFLAGS	+= $(LIBSPE2_LDFLAGS)
+
+   The same applies to libspe1.
+
+General:
+
+ * These tests are intended as a quick, but comprehensive method of verifying
+   new changes to spufs and/or libspe. The tests should run quickly and with
+   the absolute minimum of fuss.
+
+ * New tests may assume that the following is present:
+    - gcc
+    - spu-gcc
+    - embedspu
+    - libspe2 (and the libspe1 compat layer)
+    - bash
+    - python
+
+ * Under no circumstances should your test require odd things outside the
+   testsuite package. The tests will need to be trivial to get working. If you
+   need to add dependencies that will be used for multiple tests, add to the
+   top-level lib/ directory.
+
+ * Do not make assumptions about the name or directory of your tests - we may
+   move tests around as necessary (ie, if we need to add tests that are run
+   before it).
+
+ * Having said that, new tests are absolutely welcome :)

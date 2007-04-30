@@ -1,0 +1,24 @@
+
+# some defaults
+prefix	?= /usr
+CC	= gcc
+CFLAGS	= -Wall -Werror -O2 -ggdb
+CPPFLAGS = -I../../lib/include
+
+# libspe1 helpers
+LIBSPE1_CFLAGS = -I$(prefix)/include
+LIBSPE1_LDFLAGS  = -L$(prefix)/lib -lspe
+
+# libspe2 helpers
+LIBSPE2_CFLAGS = -I$(prefix)/include
+LIBSPE2_LDFLAGS  = -L$(prefix)/lib -lspe2
+
+tests =
+
+include Makefile
+
+all: $(tests)
+
+clean:
+	rm -f $(tests)
+	rm -f *.o

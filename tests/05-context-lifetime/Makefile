@@ -1,0 +1,5 @@
+
+CFLAGS	+= $(LIBSPE2_CFLAGS)
+LDFLAGS	+= $(LIBSPE2_LDFLAGS)
+
+tests += 01-no-destroy
