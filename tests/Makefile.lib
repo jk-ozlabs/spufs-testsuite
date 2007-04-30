@@ -5,6 +5,8 @@ CC	= gcc
 CFLAGS	= -Wall -Werror -O2 -ggdb
 CPPFLAGS = -I../../lib/include
 
+SPU_CC	= spu-gcc
+
 # libspe1 helpers
 LIBSPE1_CFLAGS = -I$(prefix)/include
 LIBSPE1_LDFLAGS  = -L$(prefix)/lib -lspe
@@ -13,12 +15,16 @@ LIBSPE1_LDFLAGS  = -L$(prefix)/lib -lspe
 LIBSPE2_CFLAGS = -I$(prefix)/include
 LIBSPE2_LDFLAGS  = -L$(prefix)/lib -lspe2
 
-tests =
+obj =
 
 include Makefile
 
-all: $(tests)
+all: $(obj)
 
 clean:
-	rm -f $(tests)
+	rm -f $(obj)
 	rm -f *.o
+
+# helper rules for embedded spe binaries
+%_embed.o: %
+	embedspu $^_app $^ $@

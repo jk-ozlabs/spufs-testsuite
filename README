@@ -2,13 +2,24 @@
 Running:
 
  * ./run-tests
- 	- to run all tests
+	- to run all tests
  * ./run-tests <test-dir>
- 	- run all tests in <test-dir>
+	- run all tests in <test-dir>
  * ./run-tests <test-file>
- 	- run a single test file
+	- run a single test file
 
  * The -c option will cause the test suite to continue on failures
+
+Building:
+
+ * make
+
+ * If you have libspe installed in a non-standard location (I use
+   /home/jk/install/), then add a prefix= argument to make:
+
+     make prefix=/home/jk/install
+
+   this will update CFLAGS and LDFLAGS appropriately.
 
 Writing tests:
 
@@ -24,12 +35,12 @@ Writing tests:
    <test-name>: <options>
 
    where options may be one or more of:
-   	expected_rc=<rc>	# expect a rc of <rc> instead of 0
-   	disabled=1		# disable the test
+	expected_rc=<rc>	# expect a rc of <rc> instead of 0
+	disabled=1		# disable the test
 	needs_root=1		# disable the test if run by a non-root user
 
    for example, from the testsuite's own test.conf:
-   	01-fail: expected_rc=1
+	01-fail: expected_rc=1
 	02-root: needs_root=1
 	03-skip: disabled=1
 
@@ -52,7 +63,7 @@ Writing tests:
 
 Makefiles:
 
- * .. should be kept very simple.
+ * .. should be kept very simple. If you need a hand, just ask me.
 
  * If you add a test that needs to be compiled, add it to the
    Makefile in the same directory, in the 'tests' variable:
@@ -81,10 +92,18 @@ Makefiles:
  * If you need to compile with LIBSPE2, the LIBSPE2_CFLAGS and LIBSPE2_LDFLAGS
    variables are provided for convenience. Just do this:
 
-   	CFLAGS	+= $(LIBSPE2_CFLAGS)
+	CFLAGS	+= $(LIBSPE2_CFLAGS)
 	LDFLAGS	+= $(LIBSPE2_LDFLAGS)
 
    The same applies to libspe1.
+
+ * Use implicit make rules wherever possible. This means that the standard
+   variables (CC, CFLAGS, etc) will be used.
+
+ * To build an embeddable spe binary, use an _embed.o target. This will
+   create a dependency on a spe app (foo_embed.o depends on foo), and
+   build it into an object file, with a symbol called 'foo_app'.
+
 
 General:
 
@@ -109,4 +128,8 @@ General:
    move tests around as necessary (ie, if we need to add tests that are run
    before it).
 
- * Having said that, new tests are absolutely welcome :)
+ * Having said that, new tests are absolutely welcome. If you need help with
+   the testing infrastructure, I'm happy to help. Just email me:
+   jeremy@au.ibm.com
+
+Happy testing!
