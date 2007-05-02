@@ -74,10 +74,11 @@ do
 	testdir=$(dirname "$test")
 	testconfig="$testdir/tests.conf"
 
-	# set default options 
+	# set default options
 	expected_rc=0
 	needs_root=0
 	disabled=0
+	timeout=10
 
 	# read options for this test, if present
 	if [ -e $testconfig ]
@@ -98,14 +99,28 @@ do
 		continue
 	fi
 
-	# run the test
-	(
-		cd "$test_wd"
-		export PATH="../$testdir":$PATH
-		"../$test" > "$test_outfile" 2>&1
-	)
+	# run the test in a new session
+	newpath="../$testdir:$PATH"
+	setsid sh -c "cd $test_wd && PATH=$newpath '../$test' " \
+		> $test_outfile &
+	testgrp=$!
 
+	# send a SIGALRM after $timeout seconds
+	# trap 'exit 0 HUP'
+	setsid sh -c "trap 'exit 0' HUP; sleep $timeout; kill -ALRM -$testgrp" \
+		>/dev/null 2>&1 &
+	alrmgrp=$!
+
+	wait $testgrp
 	rc=$?
+
+	kill -HUP -$alrmgrp 2>/dev/null
+
+	if [ $rc -eq 142 -a $expected_rc -ne 142 ]
+	then
+		fail "timeout"
+		continue
+	fi
 
 	if [ $rc -ne $expected_rc ]
 	then
