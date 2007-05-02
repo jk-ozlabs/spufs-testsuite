@@ -16,15 +16,23 @@ LIBSPE2_CFLAGS = -I$(prefix)/include
 LIBSPE2_LDFLAGS  = -L$(prefix)/lib -lspe2
 
 obj =
+clean =
 
 include Makefile
 
 all: $(obj)
 
 clean:
-	rm -f $(obj)
+	rm -f $(obj) $(clean)
 	rm -f *.o
 
 # helper rules for embedded spe binaries
-%_embed.o: %
-	embedspu $^_app $^ $@
+%.spe-embed.o: %.spe
+	embedspu $*_spe_app $^ $@
+
+%.spe: CC=$(SPU_CC)
+%.spe: LDFLAGS=
+
+%.spe: %.spe.c
+	$(LINK.c) $^ $(LOADLIBES) $(LDLIBS) -o $@
+

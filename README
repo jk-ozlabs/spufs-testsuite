@@ -75,7 +75,7 @@ Makefiles:
 
 	tests += sched_multiple
 
-	sched_multiple: sched_multiple.o sched_multiple_spe_embed.o
+	sched_multiple: sched_multiple.o sched_multiple.spe-embed.o
 
  * If you add a directory, add it to tests/Makefile, in the 'dirs' variable"
 
@@ -100,9 +100,9 @@ Makefiles:
  * Use implicit make rules wherever possible. This means that the standard
    variables (CC, CFLAGS, etc) will be used.
 
- * To build an embeddable spe binary, use an _embed.o target. This will
-   create a dependency on a spe app (foo_embed.o depends on foo), and
-   build it into an object file, with a symbol called 'foo_app'.
+ * To build an embeddable spe binary, use an spe-embed.o target. This will
+   create a dependency on a spe app (foo.spe-embed.o depends on foo.spe), and
+   build it into an object file, with a symbol called 'foo_spe_app'.
 
 
 General:
