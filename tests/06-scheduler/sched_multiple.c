@@ -61,7 +61,6 @@ int main(int argc, char **argv)
 {
 	int i, n_groups, pattern_len;
 	uint8_t n_spes, *pattern;
-	struct sched_param sched_param;
 	spe_gid_t *groups;
 	speid_t *threads;
 
@@ -76,12 +75,6 @@ int main(int argc, char **argv)
 	n_groups = (n_spes - 1) / MAX_THREADS_PER_GROUP + 1;
 	printf("using %d spe contexts in %d groups, for %d ops\n",
 			n_spes, n_groups, pattern_len);
-
-	sched_param.sched_priority = 50;
-	if (sched_setscheduler(0, SCHED_RR, &sched_param)) {
-		perror("sched_setscheduler");
-		return EXIT_FAILURE;
-	}
 
 	groups = malloc(n_groups * sizeof(*groups));
 	for (i = 0; i < n_groups; i++) {
