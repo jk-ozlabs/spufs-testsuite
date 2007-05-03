@@ -26,7 +26,6 @@ static inline int spu_create(const char *name, unsigned long flags,
 		va_start(ap, mode);
 		fd = va_arg(ap, int);
 		va_end(ap);
-		printf("%s: gang fd: %d\n", __FUNCTION__, fd);
 		return syscall(SYS_spu_create, name, flags, mode, fd);
 	}
 
