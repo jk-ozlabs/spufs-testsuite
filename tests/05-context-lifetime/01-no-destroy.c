@@ -1,4 +1,5 @@
-#include <libspe2.h>
+#include <test/utils.h>
+#include <test/spu_syscalls.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -6,27 +7,23 @@
 
 int main(void)
 {
-	spe_gang_context_ptr_t gang;
-	spe_context_ptr_t ctx;
+	int gang, ctx;
+	char *ctx_name, *gang_name;
 
-	gang = spe_gang_context_create(0);
+	gang_name = name_spu_gang();
+	gang = spu_create(gang_name, SPU_CREATE_GANG, 0700);
+	assert(gang != -1);
 
-	if (!gang) {
-		perror("spe_gang_context_create");
+	ctx_name = name_spu_context(gang_name);
+	printf("creating context %s\n", ctx_name);
+	ctx = spu_create(ctx_name, 0, 0700);
+	if (ctx == -1) {
+		perror("spu_create");
 		return EXIT_FAILURE;
 	}
+	assert(ctx != -1);
 
-	ctx = spe_context_create(0, gang);
-
-	if (!ctx) {
-		perror("spe_context_create");
-		return EXIT_FAILURE;
-	}
-
-	if (spe_gang_context_destroy(gang)) {
-		perror("spe_gang_context_destroy");
-		return EXIT_FAILURE;
-	}
+	close(gang);
 
 	return EXIT_SUCCESS;
 }
