@@ -23,7 +23,6 @@ int main(void)
 		unsigned long flags = 1ul << bit;
 		if (flags & spu_create_all_flags)
 			continue;
-		printf("trying flags: 0x%08lx\n", flags);
 		ctx = spu_create(name, flags, 0);
 		if (ctx != -1) {
 			fprintf(stderr, "spu_create() accepted invalid flags: "
