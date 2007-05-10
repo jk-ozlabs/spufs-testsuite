@@ -101,8 +101,7 @@ do
 
 	# run the test in a new session
 	newpath="../$testdir:$PATH"
-	setsid sh -c "cd $test_wd && PATH=$newpath '../$test' " \
-		> $test_outfile &
+	setsid sh -c "cd $test_wd && PATH=$newpath '../$test' &>$test_outfile" &
 	testgrp=$!
 
 	# send a SIGALRM after $timeout seconds
