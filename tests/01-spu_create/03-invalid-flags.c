@@ -8,10 +8,8 @@ const unsigned long spu_create_all_flags =
 	SPU_CREATE_GANG |
 	SPU_CREATE_NOSCHED |
 	SPU_CREATE_ISOLATE |
-#if 0
-	SPU_CREATE_AFFINITY_SPU 
-	SPU_CREATE_AFFINITY_MEM
-#endif
+	SPU_CREATE_AFFINITY_SPU |
+	SPU_CREATE_AFFINITY_MEM |
 	0;
 
 int main(void)
