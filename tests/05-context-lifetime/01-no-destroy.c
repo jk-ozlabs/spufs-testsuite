@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "gang-presence.h"
+
 /* create a gang with a context, then destroy the gang */
 
 int main(void)
@@ -23,7 +25,13 @@ int main(void)
 	}
 	assert(ctx != -1);
 
-	close(gang);
+	if (close(gang)) {
+		perror("close");
+		return EXIT_FAILURE;
+	}
+
+	if (check_gang_presence_on_close(gang_name, ctx))
+		return EXIT_FAILURE;
 
 	return EXIT_SUCCESS;
 }
