@@ -23,10 +23,6 @@ int main(void)
 	gang = spu_create(gang_name, SPU_CREATE_GANG, 0700);
 	assert(gang >= 0);
 
-	/* create an extra reference to the gang */
-	fd = open(gang_name, O_RDONLY);
-	assert(fd >= 0);
-
 	/* a socket for parent<->child communication. Only used to synchronise
 	 * the two processes. sock[0] is for the parent, sock[1] is for the
 	 * child. */
