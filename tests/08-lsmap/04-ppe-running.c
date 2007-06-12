@@ -7,13 +7,14 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <pthread.h>
+#include <string.h>
 
 #include <test/spu_syscalls.h>
 #include <test/hw.h>
 
 
 /**
- * Test both reeading and writing of local store while a SPE is running.
+ * Test both reading and writing of local store while a SPE is running.
  *
  * Initialise the first quadword in local store to zero, and upload SPU
  * code to set it to all ones, and loop while it's not zero.
@@ -40,9 +41,17 @@ void *ppe_thread(void *data)
 	return NULL;
 }
 
+static uint32_t spe_app[] = {
+	0x40ffff83, /* il      $3,-1		*/
+	0x20800003, /* stqa    $3,0		*/
+	0x30800003, /* lqa     $3,0		*/
+	0x217fff83, /* brnz    $3,(. - 4)	*/
+	0x00001337, /* stop    0x1337		*/
+};
+
 int main(void)
 {
-	int ctx, ls_fd, rc;
+	int ctx, ls_fd, rc, ls_buf_size;
 	const char *name = "/spu/ppe-running";
 	uint32_t *ls_map, entry, status;
 	pthread_t thread;
@@ -63,16 +72,11 @@ int main(void)
 		return EXIT_FAILURE;
 	}
 
-	ls_map[0] = 0x00000000;
-	ls_map[1] = 0x00000000;
-	ls_map[2] = 0x00000000;
-	ls_map[3] = 0x00000000;
+	/* we need a gap for a quadword */
+	ls_buf_size = 4;
 
-	ls_map[4] = 0x40ffff83; /* il      $3,-1	*/
-	ls_map[5] = 0x20800003; /* stqa    $3,0		*/
-	ls_map[6] = 0x30800003; /* lqa     $3,0		*/
-	ls_map[7] = 0x217fff83; /* brnz    $3,(. - 4)	*/
-	ls_map[8] = 0x00001337; /* stop    0x1337	*/
+	memset(ls_map, 0, ls_buf_size * sizeof(uint32_t));
+	memcpy(ls_map + ls_buf_size, spe_app, sizeof(spe_app));
 
 	rc = pthread_create(&thread, NULL, ppe_thread, ls_map);
 	if (rc) {
@@ -81,9 +85,9 @@ int main(void)
 	}
 
 	/* give the ppe thread time to schedule */
-	usleep(1000);
+	usleep(1);
 
-	entry = 0x10;
+	entry = ls_buf_size * sizeof(uint32_t);
 	rc = spu_run(ctx, &entry, &status);
 
 	if (rc < 0) {
@@ -92,12 +96,13 @@ int main(void)
 	}
 
 	if (!(rc & 0x2)) {
-		fprintf(stderr, "spu didn't stop-and-signal?\n");
+		fprintf(stderr, "spu didn't stop-and-signal? rc = 0x%x\n", rc);
 		return EXIT_FAILURE;
 	}
 
 	if (rc >> 16 != 0x1337) {
-		fprintf(stderr, "spu executed different stop instruction?\n");
+		fprintf(stderr, "spu executed different stop instruction? "
+				"rc = 0x%x\n", rc);
 		return EXIT_FAILURE;
 	}
 
