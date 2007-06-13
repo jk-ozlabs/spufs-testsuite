@@ -1,7 +1,4 @@
 
-CFLAGS += $(LIBSPE1_CFLAGS)
-LDFLAGS += $(LIBSPE1_LDFLAGS)
+sched_multiple: LDFLAGS+=-lpthread
 
 obj += sched_multiple
-
-sched_multiple: sched_multiple.o sched_multiple.spe-embed.o

@@ -1,4 +1,7 @@
 
+#define _ATFILE_SOURCE
+
+#include <test/utils.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -7,11 +10,10 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <sched.h>
+#include <pthread.h>
 
-#include <libspe.h>
-
-extern spe_program_handle_t sched_multiple_spe_app;
+#include <test/spu_syscalls.h>
+#include <test/hw.h>
 
 static void usage(char *progname)
 {
@@ -57,12 +59,51 @@ static int read_dataset(const char *filename, uint8_t *n_spes, int *n_writes,
 	return 0;
 }
 
+struct spe_thread_info {
+	int		ctx, mbox;
+	pthread_t	pthread;
+	int		run_rc;
+};
+
+static void *spe_thread(void *data)
+{
+	struct spe_thread_info *thread = data;
+	uint32_t entry = 0;
+
+	thread->run_rc = spu_run(thread->ctx, &entry, NULL);
+
+	return NULL;
+}
+
+static uint32_t spe_program[] = {
+	/* load 0x00000000 00000000 00000000 ffffffff into r5 */
+	0x32800784,	/* fsmbi r4,0xf			*/
+	0x40ffff85,	/* il    r5,-1			*/
+	0x18214205,	/* and   r5,r4,r5		*/
+
+	/* read our id into r3 */
+	0x01a00e83,	/* rdch  r3,ch29		*/
+
+	/* read a message into r4 */
+	0x01a00e84,	/* rdch  r4,ch29		*/
+
+	/* check if this is a stop message. if so, stop */
+	0x78010286,	/* ceq   r6,r5,r4		*/
+	0x20000106,	/* brz   r6,2			*/
+	0x00001337,	/* stop  0x1337			*/
+
+	/* check if this is our id. if not, don't loop, and error out */
+	0x78010186,	/* ceq   r6,r3,r4		*/
+	0x217ffd86,	/* brnz  r6,0x10		*/
+	0x00000000,	/* stop  0x00			*/
+};
+
+
 int main(int argc, char **argv)
 {
-	int i, n_groups, pattern_len;
+	int i, pattern_len;
 	uint8_t n_spes, *pattern;
-	spe_gid_t *groups;
-	speid_t *threads;
+	struct spe_thread_info *threads;
 
 	if (argc != 2) {
 		usage(argv[0]);
@@ -72,35 +113,72 @@ int main(int argc, char **argv)
 	if (read_dataset(argv[1], &n_spes, &pattern_len, &pattern))
 		return EXIT_FAILURE;
 
-	n_groups = (n_spes - 1) / MAX_THREADS_PER_GROUP + 1;
-	printf("using %d spe contexts in %d groups, for %d ops\n",
-			n_spes, n_groups, pattern_len);
+	printf("using %d spe contexts, for %d ops\n", n_spes, pattern_len);
 
-	groups = malloc(n_groups * sizeof(*groups));
-	for (i = 0; i < n_groups; i++) {
-		groups[i] = spe_create_group(SCHED_RR, 50, 1);
-		if (!groups[i]) {
-			perror("spe_create_group");
+	threads = calloc(n_spes, sizeof(*threads));
+
+	/* set up the contexts */
+	for (i = 0; i < n_spes; i++) {
+		char *name = name_spu_context(NULL);
+		int fd, rc;
+
+		threads[i].ctx = spu_create(name, 0, 0755);
+		assert(threads[i].ctx >= 0);
+
+		fd = openat(threads[i].ctx, "mem", O_RDWR);
+		assert(fd >= 0);
+
+		threads[i].mbox = openat(threads[i].ctx, "wbox", O_WRONLY);
+		if (threads[i].mbox < 0) {
+			perror("openat");
+		} else {
+			printf("[%d] mbox: %d\n", i, threads[i].mbox);
+		}
+		assert(threads[i].mbox >= 0);
+
+		rc = write(fd, spe_program, sizeof(spe_program));
+		if (rc != sizeof(spe_program)) {
+			perror("write:mem");
 			return EXIT_FAILURE;
 		}
-	}
 
-	threads = malloc(n_spes * sizeof(*threads));
-
-	for (i = 0; i < n_spes; i++) {
-		threads[i] = spe_create_thread(groups[i/16],
-				&sched_multiple_spe_app, NULL, NULL, -1, 0);
-		if (!threads[i]) {
-			perror("spe_create_thread");
+		if (pthread_create(&threads[i].pthread, NULL, spe_thread,
+					&threads[i])) {
+			perror("pthread_create");
 			return EXIT_FAILURE;
 		}
 	}
 
 	for (i = 0; i < pattern_len; i++) {
-		speid_t thread = threads[pattern[i]];
-		printf("[%d] sending to %d\n", i, pattern[i]);
-		spe_write_in_mbox(thread, pattern[i]);
+		uint32_t buf = i;
+		struct spe_thread_info *thread = threads + pattern[i];
+		if (write(thread->mbox, &buf, sizeof(buf)) != sizeof(buf)) {
+			perror("write:mbox");
+			return EXIT_FAILURE;
+		}
 	}
+
+	/* send completion, wait for all threads to complete */
+	for (i = 0; i < n_spes; i++) {
+		uint32_t buf = 0xffffffff;
+		if (write(threads[i].mbox, &buf, sizeof(buf)) != sizeof(buf)) {
+			perror("write:mbox");
+			return EXIT_FAILURE;
+		}
+
+		if (pthread_join(threads[i].pthread, NULL)) {
+			perror("pthread_join");
+			return EXIT_FAILURE;
+		}
+
+		/* check for stop-and-signal status, with 0x1337 stop code */
+		if (threads[i].run_rc != 0x13370002) {
+			fprintf(stderr, "thread exited with invalid rc: 0x%x\n",
+					threads[i].run_rc);
+			return EXIT_FAILURE;
+		}
+	}
+
 
 	return EXIT_SUCCESS;
 }
