@@ -1,6 +1,6 @@
 
 dirs = 00-testsuite 01-spu_create 02-spu_run 03-context 04-gang \
-	05-context-lifetime 08-lsmap 20-scheduler 30-dma-bench
+	05-context-lifetime 06-lsmap 20-scheduler 30-dma-bench
 
 all: $(dirs)
 
