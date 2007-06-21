@@ -63,23 +63,39 @@ struct spe_thread_info {
 	int		ctx, mbox;
 	pthread_t	pthread;
 	int		run_rc;
+	int		writes;
 };
+
+static int thread_abort;
 
 static void *spe_thread(void *data)
 {
 	struct spe_thread_info *thread = data;
-	uint32_t entry = 0;
+	uint32_t entry = 0x10;
 
 	thread->run_rc = spu_run(thread->ctx, &entry, NULL);
+
+	if (thread->run_rc != 0x13370002) {
+		thread_abort = 1;
+		fprintf(stderr, "thread exited with invalid rc: 0x%x\n",
+					thread->run_rc);
+	}
 
 	return NULL;
 }
 
 static uint32_t spe_program[] = {
-	/* load 0x00000000 00000000 00000000 ffffffff into r5 */
-	0x32800784,	/* fsmbi r4,0xf			*/
-	0x40ffff85,	/* il    r5,-1			*/
-	0x18214205,	/* and   r5,r4,r5		*/
+	/* use the first quadword as a counter */
+	0x0000000,
+	0x0000000,
+	0x0000000,
+	0x0000000,
+
+	/* load 0x0 into r7 */
+	0x40800007,	/* il	r7, 0			*/
+
+	/* load 0xffffffff 00000000 00000000 00000000 into r5 */
+	0x32f80005,	/* fsmbi r5,0xf000		*/
 
 	/* read our id into r3 */
 	0x01a00e83,	/* rdch  r3,ch29		*/
@@ -87,14 +103,18 @@ static uint32_t spe_program[] = {
 	/* read a message into r4 */
 	0x01a00e84,	/* rdch  r4,ch29		*/
 
+	/* increment counter and store at 0x0 */
+	0x1c004387,	/* ai    r7,r7,1		*/
+	0x20800004,	/* stqa  r7,0			*/
+
 	/* check if this is a stop message. if so, stop */
 	0x78010286,	/* ceq   r6,r5,r4		*/
-	0x20000106,	/* brz   r6,2			*/
+	0x20000106,	/* brz   r6,.+2			*/
 	0x00001337,	/* stop  0x1337			*/
 
 	/* check if this is our id. if not, don't loop, and error out */
 	0x78010186,	/* ceq   r6,r3,r4		*/
-	0x217ffd86,	/* brnz  r6,0x10		*/
+	0x217ffc86,	/* brnz  r6,0x10		*/
 	0x00000000,	/* stop  0x00			*/
 };
 
@@ -127,12 +147,11 @@ int main(int argc, char **argv)
 
 		fd = openat(threads[i].ctx, "mem", O_RDWR);
 		assert(fd >= 0);
+		threads[i].writes = 0;
 
 		threads[i].mbox = openat(threads[i].ctx, "wbox", O_WRONLY);
 		if (threads[i].mbox < 0) {
 			perror("openat");
-		} else {
-			printf("[%d] mbox: %d\n", i, threads[i].mbox);
 		}
 		assert(threads[i].mbox >= 0);
 
@@ -150,17 +169,22 @@ int main(int argc, char **argv)
 	}
 
 	for (i = 0; i < pattern_len; i++) {
-		uint32_t buf = i;
+		uint32_t buf = pattern[i];
 		struct spe_thread_info *thread = threads + pattern[i];
+		thread->writes++;
+		printf("[%d] sending to %d\n", i, pattern[i]);
 		if (write(thread->mbox, &buf, sizeof(buf)) != sizeof(buf)) {
 			perror("write:mbox");
 			return EXIT_FAILURE;
 		}
+		if (thread_abort)
+			return EXIT_FAILURE;
 	}
 
 	/* send completion, wait for all threads to complete */
 	for (i = 0; i < n_spes; i++) {
 		uint32_t buf = 0xffffffff;
+		printf("[%d] %d writes\n", i, threads[i].writes);
 		if (write(threads[i].mbox, &buf, sizeof(buf)) != sizeof(buf)) {
 			perror("write:mbox");
 			return EXIT_FAILURE;
@@ -170,6 +194,9 @@ int main(int argc, char **argv)
 			perror("pthread_join");
 			return EXIT_FAILURE;
 		}
+
+		printf("thread %2d ended, status=0x%08x\n",
+				i, threads[i].run_rc);
 
 		/* check for stop-and-signal status, with 0x1337 stop code */
 		if (threads[i].run_rc != 0x13370002) {
