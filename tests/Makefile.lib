@@ -36,11 +36,11 @@ clean:
 %.spe.o: CC=$(SPU_CC)
 %.spe.o: LDFLAGS=
 
-%.spe:
-	$(LINK.o) $^ -o $@
-
 %.spe: %.spe.c
 	$(LINK.c) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+%.spe:
+	$(LINK.o) $^ -o $@
 
 %.spe.o: %.spe.c
 	$(COMPILE.c) -o $@ $^
