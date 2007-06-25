@@ -34,26 +34,23 @@ static void *spe_thread(void *data)
 }
 
 static uint32_t spe_program[] = {
-/*
-	. = 0x10
-	il	r0,1
-	stqa	r0,0x0
-load:
-	lqa	r1,0x0
-	ceq	r2,r1,r0
-	brnz	r2,load
-	stop	0x1337
-*/
+	/* Use the first quadword for signalling */
 	0x00000000,
 	0x00000000,
 	0x00000000,
 	0x00000000,
-	0x40800080,
-	0x20800000,
-	0x30800001,
-	0x78000082,
-	0x217fff02,
-	0x00001337,
+	/* set r0 to 1, and store at 0x0 */
+	0x40800080, /* il      r0,1                   */
+	0x20800000, /* stqa    r0,0                   */
+
+	/* load from 0x0 into r1 */
+/* load: */
+	0x30800001, /* lqa     r1,0                   */
+
+	/* compare r1 with r0. if they're equal, then loop */
+	0x78000082, /* ceq     r2,r1,r0               */
+	0x217fff02, /* brnz    r2,18 <load>    # 18   */
+	0x00001337, /* stop                           */
 };
 
 int main()
