@@ -65,7 +65,7 @@ else
 	t_dir="tests"
 fi
 
-find $t_dir -type f -perm -0111 -name '[0-9]*' | sort |
+find $t_dir -type f -perm /0111 -name '[0-9]*' | sort |
 while read test
 do
 	printf "%-45s" "${test#tests/}"
