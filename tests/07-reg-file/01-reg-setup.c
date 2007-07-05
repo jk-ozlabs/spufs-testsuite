@@ -10,8 +10,24 @@
 #include <test/spu_syscalls.h>
 #include <test/hw.h>
 
+/**
+ * Create a SPE program:
+ *  li r0,0
+ *  li r1,1
+ *  li r2,2
+ *   ...
+ *  li r127,127
+ *
+ * So each register is loaded with its register number. Run the program, and
+ * check for this pattern in the reg file
+ */
+
 const int nr_regs = 128;
 
+/**
+ * Given a register 'reg', create an instruction to load the register number
+ * into that register
+ */
 static uint32_t load_immediate_insn(int reg)
 {
 	return 0x40800000 | (reg << 7) | reg;
