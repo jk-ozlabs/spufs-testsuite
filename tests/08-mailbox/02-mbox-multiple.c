@@ -10,6 +10,11 @@
 #include <test/spu_syscalls.h>
 #include <test/hw.h>
 
+/**
+ * Send a number of (monotonically increasing) messages to a SPE, and ensure
+ * that all messages are received, and in the right order
+ */
+
 #define nr_msgs	(1024000)
 
 struct spe_thread_info {
