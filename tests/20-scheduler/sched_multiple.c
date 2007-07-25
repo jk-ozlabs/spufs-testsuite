@@ -172,7 +172,6 @@ int main(int argc, char **argv)
 		uint32_t buf = pattern[i];
 		struct spe_thread_info *thread = threads + pattern[i];
 		thread->writes++;
-		printf("[%d] sending to %d\n", i, pattern[i]);
 		if (write(thread->mbox, &buf, sizeof(buf)) != sizeof(buf)) {
 			perror("write:mbox");
 			return EXIT_FAILURE;
