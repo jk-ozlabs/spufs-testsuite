@@ -1,15 +1,20 @@
 #include <test/spu_syscalls.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 int main(void)
 {
-	int rc;
-	const char *name = "/spu/01-affinity-create-mem";
+	const char *gang_name = "/spu/01-gang";
+	const char *ctx_name = "/spu/01-gang/01-affinity-create-mem";
+	int ctx, gang;
 
-	rc = spu_create(name, SPU_CREATE_AFFINITY_MEM, 0);
+	gang = spu_create(gang_name, SPU_CREATE_GANG, 0755);
+	assert(gang >= 0);
 
-	if (rc < 0) {
+	ctx = spu_create(ctx_name, SPU_CREATE_AFFINITY_MEM, 0);
+
+	if (ctx < 0) {
 		perror("spu_create");
 		return EXIT_FAILURE;
 	}
