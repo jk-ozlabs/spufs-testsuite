@@ -66,7 +66,7 @@ int main()
 	int ls_fd, mbox_fd, rc, i;
 	uint32_t msg;
 	struct spe_thread_info thread;
-	char *name = "/spu/ctx-" __FILE__;
+	char *name = "/spu/02-mbox-multiple";
 
 	thread.ctx = spu_create(name, 0, 0755);
 	assert(thread.ctx >= 0);

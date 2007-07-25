@@ -12,7 +12,7 @@
 int main(void)
 {
 	int rc, ctx;
-	const char *name = "/spu/" __FILE__;
+	const char *name = "/spu/04-no-status";
 	uint32_t entry;
 
 	ctx = spu_create(name, 0, 0755);

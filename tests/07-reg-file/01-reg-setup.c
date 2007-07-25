@@ -37,7 +37,7 @@ int main()
 {
 	int ctx, ls_fd, reg_fd, rc, i;
 	uint32_t *ls_map, entry;
-	char *name = "/spu/ctx-" __FILE__;
+	char *name = "/spu/01-reg-setup";
 
 	ctx = spu_create(name, 0, 0755);
 	assert(ctx >= 0);

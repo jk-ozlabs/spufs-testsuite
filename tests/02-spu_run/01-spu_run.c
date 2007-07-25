@@ -11,7 +11,7 @@
 int main(void)
 {
 	int ctx, rc;
-	const char *name = "/spu/" __FILE__;
+	const char *name = "/spu/01-spu_run";
 	uint32_t entry, status;
 
 	ctx = spu_create(name, 0, 0755);
