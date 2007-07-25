@@ -1,2 +1,2 @@
 
-obj += 01-create 02-create-destroy
+obj += 01-create 02-create-destroy 03-context-within-gang
