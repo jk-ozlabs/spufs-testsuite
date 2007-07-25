@@ -1,25 +1,21 @@
-#include <libspe2.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <assert.h>
+
+#include <test/spu_syscalls.h>
 
 /* create a gang, then destroy it */
 
 int main(void)
 {
-	spe_gang_context_ptr_t gang;
-	int rc;
+	const char *name = "/spu/02-gang";
+	int gang;
 
-	gang = spe_gang_context_create(0);
+	gang = spu_create(name, SPU_CREATE_GANG, 0755);
+	assert(gang >= 0);
 
-	if (!gang) {
-		perror("spe_gang_context_create");
-		return EXIT_FAILURE;
-	}
-
-	rc = spe_gang_context_destroy(gang);
-
-	if (rc) {
-		perror("spe_gang_context_destroy");
+	if (close(gang)) {
+		perror("close");
 		return EXIT_FAILURE;
 	}
 

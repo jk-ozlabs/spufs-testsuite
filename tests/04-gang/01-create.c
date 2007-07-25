@@ -1,17 +1,19 @@
-#include <libspe2.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#include <test/spu_syscalls.h>
 
 /* create a gang */
 
 int main(void)
 {
-	spe_gang_context_ptr_t gang;
+	const char *name = "/spu/01-gang";
+	int gang;
 
-	gang = spe_gang_context_create(0);
+	gang = spu_create(name, SPU_CREATE_GANG, 0755);
 
-	if (!gang) {
-		perror("spe_gang_context_create");
+	if (gang < 0) {
+		perror("spu_create");
 		return EXIT_FAILURE;
 	}
 
