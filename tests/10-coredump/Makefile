@@ -1,0 +1,1 @@
+obj += coredump readnotes
