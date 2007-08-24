@@ -2,7 +2,7 @@
 
 ulimit -c unlimited
 
-pid=$(coredump)
+pid=$(spu-coredump)
 
 corefile="core.$pid"
 

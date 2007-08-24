@@ -1,1 +1,1 @@
-obj += coredump readnotes
+obj += spu-coredump readnotes
