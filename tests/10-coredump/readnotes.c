@@ -16,17 +16,6 @@
 #endif
 
 
-/*
- * { "lslr", NULL, __spufs_lslr_get, 19 },
- * { "decr", NULL, __spufs_decr_get, 19 },
- * { "decr_status", NULL, __spufs_decr_status_get, 19 },
- * { "signal1_type", NULL, __spufs_signal1_type_get, 19 },
- * { "signal2_type", NULL, __spufs_signal2_type_get, 19 },
- * { "event_mask", NULL, __spufs_event_mask_get, 19 },
- * { "event_status", NULL, __spufs_event_status_get, 19 },
- * { "object-id", NULL, __spufs_object_id_get, 19 },
- */
-
 static int check_spu_note(char *p, Elf32_Nhdr *nhdr)
 {
 	unsigned long long tmp;
@@ -47,7 +36,8 @@ static int check_spu_note(char *p, Elf32_Nhdr *nhdr)
 	    && strcmp("signal2_type", s)
 	    && strcmp("event_mask", s)
 	    && strcmp("event_status", s)
-	    && strcmp("object-id", s))
+	    && strcmp("object-id", s)
+	    && strcmp("npc", s))
 	{
 		/* It's a binary-format note */
 		return 0;
