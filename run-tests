@@ -1,6 +1,6 @@
 #!/bin/bash
 
-test_wd=tests.tmp
+test_basedir=test-output.$(date +"%Y%m%d%H%M%S")
 test_outfile=test.out
 
 function pass() {
@@ -11,10 +11,10 @@ function fail() {
 	echo "FAIL ($1)"
 
 	# show output, if there is any
-	if [ -s "$test_wd/$test_outfile" ]
+	if [ -s "$test_basedir/$test_outfile" ]
 	then
 		echo "test output:"
-		sed -e 's/^/> /' "$test_wd/$test_outfile"
+		sed -e 's/^/> /' "$test_basedir/$test_outfile"
 	fi
 
 	# abort if we weren't started with the -c option
@@ -30,7 +30,7 @@ function skip() {
 
 # functions to to some simple testing on kernel logs
 dmesg_filter='grep Badness'
-dmesg_file="$test_wd/dmesg.orig"
+dmesg_file="$test_basedir/dmesg.orig"
 
 function check_dmesg() {
 	mv "$dmesg_file" "$dmesg_file.orig"
@@ -52,9 +52,7 @@ do
 	shift
 done
 
-mkdir "$test_wd"
-
-trap 'rm -rf "$test_wd"' EXIT
+mkdir "$test_basedir" || exit 1
 
 init_dmesg
 
@@ -99,10 +97,12 @@ do
 		continue
 	fi
 
+	test_wd="$test_basedir/$testdir"
+	rsync -a "$testdir" "$test_basedir/tests"
+
 	# run the test in a new session
-	newpath="../$testdir:$PATH"
-	setsid sh -c "cd '$test_wd' && PATH='$newpath' '../$test' \
-		  > '$test_outfile' 2>&1" &
+	setsid sh -c "cd '$test_wd' && PATH=.:$PATH './$testname' \
+		> '../../$test_outfile' 2>&1" &
 	testgrp=$!
 
 	# send a SIGALRM after $timeout seconds
