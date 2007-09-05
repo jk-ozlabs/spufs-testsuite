@@ -26,6 +26,12 @@ clean:
 	rm -f $(obj) $(clean)
 	rm -f *.o
 
+# Rules for building 64 bit binaries
+%-64: CFLAGS += -m64
+
+%-64: %.c
+	$(COMPILE.c) -o $@ $^
+
 # helper rules for embedded spe binaries
 %.spe-embed.o: %.spe
 	embedspu $*_spe_app $^ $@
