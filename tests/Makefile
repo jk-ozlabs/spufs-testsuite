@@ -21,7 +21,7 @@
 dirs = 00-testsuite 01-spu_create 02-spu_run 03-context 04-gang \
 	05-context-lifetime 06-lsmap 07-reg-file 08-mailbox 09-syscalls \
 	10-coredump 11-nosched 12-affinity 14-dma 15-class0 \
-	20-scheduler 30-dma-bench
+	20-scheduler
 
 all: $(dirs)
 
