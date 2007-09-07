@@ -18,18 +18,4 @@
 # along with this program; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-dirs = 00-testsuite 01-spu_create 02-spu_run 03-context 04-gang \
-	05-context-lifetime 06-lsmap 07-reg-file 08-mailbox 09-syscalls \
-	10-coredump 11-nosched 12-affinity 14-dma 15-class0 \
-	20-scheduler 30-dma-bench
-
-all: $(dirs)
-
-$(dirs) : % : %/Makefile
-	cd $@ && make -f ../Makefile.lib all
-
-clean:
-	for d in $(dirs); do (cd $$d && make -f ../Makefile.lib clean); done
-
-.PHONY: all clean $(dirs)
-
+obj += 01-dma-alignment 02-invalid-dma 03-illegal-insn
