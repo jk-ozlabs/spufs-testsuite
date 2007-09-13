@@ -47,7 +47,7 @@ import os, sys, resource, atexit
 def main():
     resource.setrlimit(resource.RLIMIT_CORE, (-1, -1))
 
-    pipe = os.popen('spu-coredump')
+    pipe = os.popen('./spu-coredump')
     pid = pipe.read().strip()
     pipe.close()
 

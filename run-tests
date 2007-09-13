@@ -121,7 +121,7 @@ do
 	rsync -a "$testdir" "$test_basedir/tests"
 
 	# run the test in a new session
-	setsid sh -c "cd '$test_wd' && PATH=.:$PATH './$testname' \
+	setsid sh -c "cd '$test_wd' && './$testname' \
 		> '../../$test_outfile' 2>&1" &
 	testgrp=$!
 

@@ -26,7 +26,7 @@ corelist=""
 
 function get_note_size
 {
-	pid=$(coredump)
+	pid=$(./coredump)
 
 	corefile="core.$pid"
 

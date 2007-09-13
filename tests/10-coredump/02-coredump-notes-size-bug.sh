@@ -22,7 +22,7 @@
 
 ulimit -c unlimited
 
-pid=$(spu-coredump)
+pid=$(./spu-coredump)
 
 corefile="core.$pid"
 
@@ -31,7 +31,7 @@ if [[ ! -f $corefile ]]; then
 	exit 2
 fi
 
-readnotes $corefile
+./readnotes $corefile
 
 if [[ $? -ne 0 ]]; then
 	exit 1
