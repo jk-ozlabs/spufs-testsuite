@@ -126,7 +126,7 @@ static uint32_t spe_program[] = {
 
 	/* increment counter and store at 0x0 */
 	0x1c004387,	/* ai    r7,r7,1		*/
-	0x20800004,	/* stqa  r7,0			*/
+	0x20800007,	/* stqa  r7,0			*/
 
 	/* check if this is a stop message. if so, stop */
 	0x78010286,	/* ceq   r6,r5,r4		*/
@@ -134,8 +134,8 @@ static uint32_t spe_program[] = {
 	0x00001337,	/* stop  0x1337			*/
 
 	/* check if this is our id. if not, don't loop, and error out */
-	0x78010186,	/* ceq   r6,r3,r4		*/
-	0x217ffc86,	/* brnz  r6,0x10		*/
+	0x78010188,	/* ceq   r8,r3,r4		*/
+	0x217ffc88,	/* brnz  r8,0x1c		*/
 	0x00000000,	/* stop  0x00			*/
 };
 
