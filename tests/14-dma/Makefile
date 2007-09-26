@@ -18,7 +18,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-obj += 01-spe-get 02-spe-put
+obj += 01-spe-get 02-spe-put 03-hugepage-spe-faulted 04-hugepage-ppe-faulted
 
-01-spe-get: 01-spe-get.o pattern.o
-02-spe-put: 02-spe-put.o pattern.o
+$(obj): pattern.o
