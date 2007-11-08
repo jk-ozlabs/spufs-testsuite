@@ -18,4 +18,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-obj += 01-dma-alignment 02-invalid-dma 03-illegal-insn
+obj += 01-dma-alignment-signal 02-dma-alignment-event \
+       03-invalid-dma-signal 04-invalid-dma-event \
+       05-illegal-insn-signal 06-illegal-insn-event
+
+
+01-dma-alignment-signal: 01-dma-alignment-signal.o class0-apps.o
+02-dma-alignment-event:  02-dma-alignment-event.o class0-apps.o
+03-invalid-dma-signal:   03-invalid-dma-signal.o class0-apps.o
+04-invalid-dma-event:    04-invalid-dma-event.o class0-apps.o
+05-illegal-insn-signal:  05-illegal-insn-signal.o class0-apps.o
+06-illegal-insn-event:   06-illegal-insn-event.o class0-apps.o
+

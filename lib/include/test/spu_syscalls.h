@@ -35,6 +35,12 @@
 #define SPU_CREATE_AFFINITY_SPU		0x0010
 #define SPU_CREATE_AFFINITY_MEM		0x0020
 
+#define SPE_EVENT_DMA_ALIGNMENT		0x0008
+#define SPE_EVENT_SPE_ERROR		0x0010
+#define SPE_EVENT_SPE_DATA_SEGMENT	0x0020
+#define SPE_EVENT_SPE_DATA_STORAGE	0x0040
+#define SPE_EVENT_INVALID_DMA		0x0800
+
 /* while the spu syscalls aren't widely available... */
 
 static inline int spu_create(const char *name, unsigned long flags,
