@@ -18,4 +18,5 @@
 # along with this program; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-obj += 01-create 02-no-name 03-invalid-flags 04-mode 05-files
+obj += 01-create 02-no-name 03-invalid-flags 04-mode 05-files \
+       06-isolation-unavailable
