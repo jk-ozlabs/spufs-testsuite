@@ -34,7 +34,7 @@
 
 #include <test/spu_syscalls.h>
 
-#define ITERATIONS 16384
+#define ITERATIONS 4096
 
 static void do_creates(const char *name)
 {
