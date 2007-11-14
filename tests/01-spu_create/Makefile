@@ -19,4 +19,4 @@
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 obj += 01-create 02-no-name 03-invalid-flags 04-mode 05-files \
-       06-isolation-unavailable
+       06-isolation-unavailable 07-destroy-vs-readdir-race
