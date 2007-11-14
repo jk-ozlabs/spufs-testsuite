@@ -45,7 +45,7 @@ int main()
 {
 	int ctx, rc;
 	uint32_t entry;
-	char *name = "/spu/01-spe-get";
+	char *name = "/spu/01-dma-alignment-signal";
 	struct sigaction action = {
 		.sa_sigaction	= sighandler,
 		.sa_flags	= SA_SIGINFO

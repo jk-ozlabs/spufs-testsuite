@@ -76,7 +76,7 @@ int main(void)
 	struct spufs_file *file;
 
 	umask(0);
-	ctx = spu_create("/spu/04-files", 0, 0777);
+	ctx = spu_create("/spu/05-files", 0, 0777);
 	assert(ctx >= 0);
 
 	for (file = spufs_files; file->name; file++) {

@@ -73,7 +73,7 @@ static uint32_t spe_app[] = {
 int main(void)
 {
 	int ctx, ls_fd, rc, ls_buf_size;
-	const char *name = "/spu/ppe-running";
+	const char *name = "/spu/04-ppe-running";
 	uint32_t *ls_map, entry, status;
 	pthread_t thread;
 

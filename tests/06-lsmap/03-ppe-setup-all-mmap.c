@@ -50,7 +50,7 @@
 int main(void)
 {
 	int ctx, ls_fd, rc, i;
-	const char *name = "/spu/ppe-setup-all-mmap";
+	const char *name = "/spu/03-ppe-setup-all-mmap";
 	uint32_t *ls_map, entry, status;
 
 	ctx = spu_create(name, 0, 0755);

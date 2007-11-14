@@ -36,7 +36,7 @@ int main()
 {
 	int ctx, rc;
 	uint32_t entry, event;
-	char *name = "/spu/01-spe-get";
+	char *name = "/spu/06-illegal-insn-event";
 	int illegal_insn_addr = 0x8;
 
 	ctx = spu_create(name, SPU_CREATE_EVENTS_ENABLED, 0755);

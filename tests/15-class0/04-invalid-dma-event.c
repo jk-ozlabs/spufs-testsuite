@@ -36,7 +36,7 @@ int main()
 {
 	int ctx, rc;
 	uint32_t entry, event;
-	char *name = "/spu/01-spe-get";
+	char *name = "/spu/04-invalid-dma-event";
 
 	ctx = spu_create(name, SPU_CREATE_EVENTS_ENABLED, 0755);
 	assert(ctx >= 0);

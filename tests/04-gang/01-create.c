@@ -28,7 +28,7 @@
 
 int main(void)
 {
-	const char *name = "/spu/01-gang";
+	const char *name = "/spu/01-create";
 	int gang;
 
 	gang = spu_create(name, SPU_CREATE_GANG, 0755);

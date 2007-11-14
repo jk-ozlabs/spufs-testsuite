@@ -44,7 +44,7 @@ static void do_creates(const char *name)
 int main(void)
 {
 	int i, n_procs;
-	const char *fmt = "/spu/01-single-%d";
+	const char *fmt = "/spu/02-multiprocess-%d";
 	char **names;
 	int *pids;
 	struct timeval tv;

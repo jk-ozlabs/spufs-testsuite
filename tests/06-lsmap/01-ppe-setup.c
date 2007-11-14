@@ -32,7 +32,7 @@
 int main(void)
 {
 	int ctx, ls_fd, rc;
-	const char *name = "/spu/ppe-access";
+	const char *name = "/spu/01-ppe-setup";
 	uint32_t buf, entry, status;
 
 	ctx = spu_create(name, 0, 0755);

@@ -44,7 +44,7 @@ int main()
 {
 	int ctx, rc;
 	uint32_t entry;
-	char *name = "/spu/01-spe-get";
+	char *name = "/spu/05-illegal-insn-signal";
 	int illegal_insn_addr = 0x8;
 	struct sigaction action = {
 		.sa_sigaction	= sighandler,

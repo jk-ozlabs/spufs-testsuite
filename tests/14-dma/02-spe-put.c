@@ -112,7 +112,7 @@ int main()
 	int ls_fd, ctx, rc;
 	uint8_t *ls_map;
 	uint32_t entry;
-	char *name = "/spu/01-spe-get";
+	char *name = "/spu/02-spe-put";
 
 
 	ctx = spu_create(name, 0, 0755);

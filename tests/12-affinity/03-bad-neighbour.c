@@ -31,7 +31,7 @@ int main(void)
 {
 	int gang, ctx, bad_fd;
 	const char *names[] = {"/spu/gang-01/",
-			       "/spu/gang-01/02-affinity-create-spu.1"};
+			       "/spu/gang-01/03-bad-neighbour"};
 
 	gang = spu_create(names[0], SPU_CREATE_GANG, 0755);
 	assert(gang >= 0);

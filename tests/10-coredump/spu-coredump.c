@@ -37,7 +37,7 @@ int main(void)
 	char name[256];
 
 	for (i = 0; i < 16; i++) {
-		snprintf(name, 256, "/spu/10-coredump-%d-%d", getpid(), i);
+		snprintf(name, 256, "/spu/coredump-%d-%d", getpid(), i);
 		ctx[i] = spu_create(name, 0, 0755);
 		assert(ctx[i] >= 0);
 	}

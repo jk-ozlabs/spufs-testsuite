@@ -48,7 +48,7 @@
 int main(void)
 {
 	int ctx, ls_fd, rc, i;
-	const char *name = "/spu/ppe-setup-all";
+	const char *name = "/spu/02-ppe-setup-all";
 	uint32_t buf[2], entry, status;
 
 	ctx = spu_create(name, 0, 0755);

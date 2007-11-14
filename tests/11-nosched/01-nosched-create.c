@@ -26,7 +26,7 @@
 int main(void)
 {
 	int rc;
-	const char *name = "/spu/01-create-nosched";
+	const char *name = "/spu/01-nosched-create";
 
 	rc = spu_create(name, SPU_CREATE_NOSCHED, 0);
 
