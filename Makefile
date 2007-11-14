@@ -23,7 +23,7 @@ all:
 	cd benchmarks && make all
 
 clean:
-	cd tests && make all
+	cd tests && make clean
 	cd benchmarks && make clean
 
 check: clean all
