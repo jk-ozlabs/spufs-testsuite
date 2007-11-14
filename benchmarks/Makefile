@@ -18,13 +18,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-all:
-	cd tests && make all
-	cd benchmarks && make all
+dirs = 01-spu_create
+
+all: $(dirs)
+
+$(dirs) : % : %/Makefile
+	cd $@ && make -f ../../tests/Makefile.lib all
 
 clean:
-	cd tests && make all
-	cd benchmarks && make clean
+	for d in $(dirs); do (cd $$d && make -f ../../tests/Makefile.lib clean); done
 
-check: clean all
-	./run-tests
+.PHONY: all clean $(dirs)
+

@@ -63,11 +63,18 @@ function init_dmesg() {
 
 # flag to continue on test failures
 cont=0
+# run benchmarks ?
+benchmark=0
 
-while getopts c opt;
+while getopts cb opt;
 do
 	case "$opt" in
-		c)  cont=1
+	c)
+		cont=1
+		;;
+	b)
+		benchmark=1
+		;;
 	esac
 	shift
 done
@@ -82,6 +89,7 @@ then
 else
 	t_dir="tests"
 fi
+b_dir="benchmarks"
 
 find $t_dir -type f -perm /0111 -name '[0-9]*' | sort |
 while read test
@@ -157,3 +165,14 @@ do
 	pass
 done
 
+[ "$benchmark" -ne 1 ] && exit
+
+echo '--- Running benchmarks'
+
+find $b_dir -type f -perm /0111 -name '[0-9]*' | sort |
+while read benchmark;
+do
+	printf "%-43s" "${benchmark#benchmarks/}"
+
+	$benchmark
+done

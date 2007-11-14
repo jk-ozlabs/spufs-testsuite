@@ -18,13 +18,4 @@
 # along with this program; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-all:
-	cd tests && make all
-	cd benchmarks && make all
-
-clean:
-	cd tests && make all
-	cd benchmarks && make clean
-
-check: clean all
-	./run-tests
+obj += 01-single 02-multiprocess
