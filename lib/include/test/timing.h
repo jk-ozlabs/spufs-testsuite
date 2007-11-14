@@ -43,7 +43,7 @@ static inline void timer_stop_and_print(struct timeval *start_time)
 		end_time.tv_sec -= 1;
 	}
 
-	printf("%3ld.%03ld\n", end_time.tv_sec - start_time->tv_sec,
+	printf("%ld.%03ld\n", end_time.tv_sec - start_time->tv_sec,
 			(end_time.tv_usec - start_time->tv_usec) / 1000);
 }
 
