@@ -165,7 +165,9 @@ do
 	pass
 done
 
-[ "$benchmark" -ne 1 ] && exit
+rc=$?
+
+[ "$rc" -ne 0 -o "$benchmark" -ne 1 ] && exit $rc
 
 echo '--- Running benchmarks'
 
