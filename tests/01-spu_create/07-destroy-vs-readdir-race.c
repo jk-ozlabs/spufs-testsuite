@@ -71,7 +71,7 @@ static void do_readdirs(void)
 int main(void)
 {
 	int i, n_procs;
-	const char *fmt = "/spu/03-destroy-vs-readdir-race-%d";
+	const char *fmt = "/spu/07-destroy-vs-readdir-race-%d";
 	char **names;
 	int *pids;
 
