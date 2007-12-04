@@ -31,16 +31,8 @@ if [[ ! -f $corefile ]]; then
 	exit 2
 fi
 
-load_addr=$(readelf -l $corefile | awk '/LOAD/ {print $2; exit}')
-load_addr=$(($load_addr))
+./parse-core --find-exec "$corefile"
+rc=$?
 
-dd if=$corefile of=out.bin bs=1 skip=$load_addr count=4
-echo -en "\x7fELF" | cmp out.bin
-
-if [[ $? -ne 0 ]]; then
-	exit 1
-fi
-
-rm -f $corefile out.bin
-
-exit 0
+rm -f $corefile
+exit $rc

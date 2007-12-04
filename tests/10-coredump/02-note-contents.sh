@@ -31,12 +31,8 @@ if [[ ! -f $corefile ]]; then
 	exit 2
 fi
 
-./readnotes $corefile
-
-if [[ $? -ne 0 ]]; then
-	exit 1
-fi
+./parse-core --check-notes $corefile
+rc=$?
 
 rm -f $corefile
-
 exit 0
