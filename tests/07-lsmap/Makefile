@@ -19,6 +19,7 @@
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-obj += 01-ppe-setup 02-ppe-setup-all 03-ppe-setup-all-mmap 04-ppe-running
+obj += 01-ppe-setup 02-ppe-setup-all 03-ppe-setup-all-mmap 04-ppe-running \
+       05-size 06-seek-end 07-seek-cur
 
 04-ppe-running: LDFLAGS+=-lpthread
