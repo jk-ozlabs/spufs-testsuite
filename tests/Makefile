@@ -18,10 +18,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-dirs = 00-testsuite 01-spu_create 02-spu_run 03-context 04-gang \
-	05-context-lifetime 06-lsmap 07-reg-file 08-mailbox 09-syscalls \
-	10-coredump 11-nosched 12-affinity 14-dma 15-class0 \
-	20-scheduler
+dirs = 00-testsuite 02-spu_create 03-spu_run 04-context 05-gang		\
+       06-context-lifetime 07-lsmap 08-reg-file 09-mailbox 10-syscalls	\
+       11-coredump 12-nosched 13-affinity 14-dma 15-class1 20-scheduler
 
 all: $(dirs)
 
