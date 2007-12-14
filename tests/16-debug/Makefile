@@ -18,18 +18,4 @@
 # along with this program; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-dirs = 00-testsuite 02-spu_create 03-spu_run 04-context 05-gang		\
-       06-context-lifetime 07-lsmap 08-reg-file 09-mailbox 10-syscalls	\
-       11-coredump 12-nosched 13-affinity 14-dma 15-class0 16-debug	\
-       20-scheduler
-
-all: $(dirs)
-
-$(dirs) : % : %/Makefile
-	cd $@ && make -f ../Makefile.lib all
-
-clean:
-	for d in $(dirs); do (cd $$d && make -f ../Makefile.lib clean); done
-
-.PHONY: all clean $(dirs)
-
+obj += 01-single-step
