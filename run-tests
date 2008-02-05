@@ -76,8 +76,10 @@ do
 		benchmark=1
 		;;
 	esac
-	shift
+	echo $opt
 done
+
+shift $(($OPTIND - 1))
 
 mkdir "$test_basedir" || exit 1
 
