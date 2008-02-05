@@ -189,13 +189,13 @@ static int parse_notes(void *notes, unsigned int notes_size,
 		int descsz = pad(nhdr->n_descsz);
 		char *name;
 
-		if (offset + sizeof(nhdr) + namesz > notes_size) {
+		if (offset + sizeof(*nhdr) + namesz > notes_size) {
 			fprintf(stderr, "note name extends past "
 					"notes section\n");
 			return -1;
 		}
 
-		if (offset + sizeof(nhdr) + namesz + descsz > notes_size) {
+		if (offset + sizeof(*nhdr) + namesz + descsz > notes_size) {
 			fprintf(stderr, "note descriptor extends past "
 					"notes section\n");
 			return -1;
