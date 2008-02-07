@@ -20,4 +20,4 @@
 
 sched_multiple: LDFLAGS+=-lpthread
 
-obj += sched_multiple
+obj += sched_multiple 02-yield-starvation
