@@ -48,7 +48,7 @@ int main(void)
 		name = name_spu_context(NULL);
 
 		ctx = spu_create(name, 0, mode);
-		assert(ctx);
+		assert(ctx >= 0);
 
 		if (fstat(ctx, &stat)) {
 			perror("fstat");
