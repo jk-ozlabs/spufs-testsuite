@@ -52,6 +52,14 @@ static int cap_affinity(void)
 	return stat("/sys/devices/system/node", &statbuf) == 0;
 }
 
+static int cap_hugepages(void)
+{
+	struct stat statbuf;
+
+	/* todo: might be nice to check that it's mounted where we expect too */
+	return stat("/proc/sys/vm/nr_hugepages", &statbuf) == 0;
+}
+
 struct capability {
 	const char *name;
 	int (*fn)(void);
@@ -75,6 +83,10 @@ static struct capability caps[] = {
 	{
 		.name = "affinity",
 		.fn = cap_affinity
+	},
+	{
+		.name = "hugepages",
+		.fn = cap_hugepages
 	},
 	{
 		.name = NULL
