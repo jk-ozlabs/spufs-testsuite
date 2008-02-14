@@ -39,7 +39,7 @@ clean:
 	cd tests && make clean
 	cd benchmarks && make clean
 	rm -f bin/capabilities bin/run-tests
-	rm -f bin/*.o
+	rm -f bin/*.o bin/talloc/talloc.o
 
 check: clean all
 	bin/run-tests
