@@ -11,11 +11,11 @@ See the COPYING file for the full text of the GNU General Public License.
 
 Running:
 
- * ./run-tests
+ * bin/run-tests
 	- to run all tests
- * ./run-tests <test-dir>
+ * bin/run-tests <test-dir>
 	- run all tests in <test-dir>
- * ./run-tests <test-file>
+ * bin/run-tests <test-file>
 	- run a single test file
 
  * The -c option will cause the test suite to continue on failures
@@ -46,13 +46,25 @@ Writing tests:
 
    where options may be one or more of:
 	expected_rc=<rc>	# expect a rc of <rc> instead of 0
-	disabled=1		# disable the test
-	needs_root=1		# disable the test if run by a non-root user
+	signal=<signum>		# expect the test be be killed by <signum>
+	disabled		# disable the test
+
+   you can also make tests conditionally run if various capabilities are
+   available on the system at run-time. These are specicied by cap_* options.
+   At present, we have the following capabilities:
+	cap_root		# run the test if uid==0
+	cap_affinity		# run the test only on affinity-enabled hardware
+
+   Capabilities can be inverted, using the '!' character. For example,
+   the option "!cap_root" will run the test only if uid!=0.
 
    for example, from the testsuite's own test.conf:
 	01-fail: expected_rc=1
-	02-root: needs_root=1
-	03-skip: disabled=1
+	02-root: cap_root
+	03-skip: disabled
+	06-cap: cap_never
+	07-nocap: !cap_always
+	08-signal: signal=15
 
    If a test is not listed in test.conf (or there is no test.conf), then
    the default options will be used.

@@ -18,13 +18,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-all:
-	cd tests && make all
-	cd benchmarks && make all
+CC=gcc
+CFLAGS=-Wall -Werror -g -O2
+LDFLAGS=
+
+all: tests benchmarks
+
+.PHONY: tests benchmarks
+
+tests benchmarks: bin/run-tests
+	$(MAKE) -C $@ all
+
+
+bin/run-tests: bin/talloc/talloc.o bin/run-tests.o bin/capabilities.o bin/test.o
+	$(LINK.o) -o $@ $^
 
 clean:
 	cd tests && make clean
 	cd benchmarks && make clean
+	rm -f bin/capabilities bin/run-tests
+	rm -f bin/*.o
 
 check: clean all
 	./run-tests

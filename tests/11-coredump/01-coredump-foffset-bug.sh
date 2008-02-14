@@ -22,7 +22,7 @@
 
 ulimit -c unlimited
 
-pid=$(./spu-coredump)
+pid=$(spu-coredump)
 
 corefile="core.$pid"
 
@@ -31,7 +31,7 @@ if [[ ! -f $corefile ]]; then
 	exit 2
 fi
 
-./parse-core --find-exec "$corefile"
+parse-core --find-exec "$corefile"
 rc=$?
 
 rm -f $corefile

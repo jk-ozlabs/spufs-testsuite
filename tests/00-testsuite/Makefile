@@ -19,6 +19,6 @@
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-obj += 00-pass 01-fail 02-root 03-skip
+obj += 00-pass 01-fail 02-root 03-skip 06-cap 07-nocap 08-signal
 
 
