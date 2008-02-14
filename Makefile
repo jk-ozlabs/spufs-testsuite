@@ -42,4 +42,4 @@ clean:
 	rm -f bin/*.o
 
 check: clean all
-	./run-tests
+	bin/run-tests
