@@ -25,11 +25,15 @@ dirs = 00-testsuite 02-spu_create 03-spu_run 04-context 05-gang		\
 
 all: $(dirs)
 
+# we want the sub-makefiles to use Makefile.lib, which includes the
+# test dir's Makefile
+MAKEFILES=../../lib/Makefile.lib
+
 $(dirs) : % : %/Makefile
-	cd $@ && make -f ../Makefile.lib all
+	@$(MAKE) -C $@ all
 
 clean:
-	for d in $(dirs); do (cd $$d && make -f ../Makefile.lib clean); done
+	for d in $(dirs); do ($(MAKE) -C $$d clean); done
 
 .PHONY: all clean $(dirs)
 

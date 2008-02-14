@@ -22,6 +22,8 @@ CC=gcc
 CFLAGS=-Wall -Werror -g -O2
 LDFLAGS=
 
+MAKEFLAGS=--no-print-directory
+
 all: tests benchmarks
 
 .PHONY: tests benchmarks

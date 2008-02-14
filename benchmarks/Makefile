@@ -20,13 +20,17 @@
 
 dirs = 01-spu_create
 
+# we want the sub-makefiles to use Makefile.lib, which includes the
+# test dir's Makefile
+MAKEFILES=../../lib/Makefile.lib
+
 all: $(dirs)
 
 $(dirs) : % : %/Makefile
-	cd $@ && make -f ../../tests/Makefile.lib all
+	@$(MAKE) -C $@ all
 
 clean:
-	for d in $(dirs); do (cd $$d && make -f ../../tests/Makefile.lib clean); done
+	for d in $(dirs); do ($(MAKE) -C $$d clean); done
 
 .PHONY: all clean $(dirs)
 
