@@ -29,7 +29,7 @@
 
 #include <test/spu_syscalls.h>
 
-#define N_CONTEXTS 100
+#define N_CONTEXTS 200
 
 int main(void)
 {
