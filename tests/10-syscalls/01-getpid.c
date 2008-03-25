@@ -117,7 +117,7 @@ int main()
 	pid = getpid();
 
 	if (syscall_block->nr_ret != pid) {
-		fprintf(stderr, "SPE getpid() returned %" PRIu64 ", but PPE "
+		fprintf(stderr, "SPE getpid() returned %" PRId64 ", but PPE "
 				"getpid() returned %d\n",
 				syscall_block->nr_ret, pid);
 		return EXIT_FAILURE;
