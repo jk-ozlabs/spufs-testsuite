@@ -47,10 +47,12 @@ struct options {
 	enum {
 		LIST_NOTES,
 		CHECK_NOTES,
+		CHECK_FD,
 		DUMP_NOTE,
 		FIND_EXEC,
 	} action;
 	const char *dump_note_name;
+	const char *fd;
 };
 
 struct spu_note_check {
@@ -175,6 +177,42 @@ static int check_note(Elf_Nhdr *nhdr)
 	return 0;
 }
 
+
+static int check_fd(Elf_Nhdr *nhdr, const char *fd)
+{
+	char *str, *fdstr, *sep;
+	int rc = -1;
+
+	str = strdup(note_name(nhdr));
+	fdstr = strchr(str, '/');
+	if (!fdstr) {
+		fprintf(stderr, "note %s: doesn't contain '/'\n",
+				note_name(nhdr));
+		goto out;
+	}
+	fdstr++;
+
+	sep = strchr(fdstr, '/');
+	if (!sep) {
+		fprintf(stderr, "note %s: doesn't contain enough '/'s\n",
+				note_name(nhdr));
+		goto out;
+	}
+	*sep = '\0';
+
+	if (strcmp(fd, fdstr)) {
+		fprintf(stderr, "note %s: wrong fd: got %s, expecting %s\n",
+				note_name(nhdr), fdstr, fd);
+		goto out;
+	}
+
+	rc = 0;
+out:
+	free(str);
+	return rc;
+
+}
+
 static int parse_notes(void *notes, unsigned int notes_size,
 		struct options *opts)
 {
@@ -219,6 +257,10 @@ static int parse_notes(void *notes, unsigned int notes_size,
 		} else if (opts->action == CHECK_NOTES) {
 			if (check_note(nhdr))
 				return -1;
+		} else if (opts->action == CHECK_FD) {
+			if (check_fd(nhdr, opts->fd))
+				return -1;
+
 		} else if (opts->action == DUMP_NOTE) {
 			if (!strcmp(name, opts->dump_note_name) ||
 					!strcmp(name + strlen(SPU_NOTE_PREFIX),
@@ -455,6 +497,7 @@ static void usage(const char *prog)
 {
 	fprintf(stderr, "usage:\t%s [--list-notes] <corefile>\n", prog);
 	fprintf(stderr, "\t%s --check-notes <corefile>\n", prog);
+	fprintf(stderr, "\t%s --check-fd <fd> <corefile>\n", prog);
 	fprintf(stderr, "\t%s --print-note <notename> <corefile>\n", prog);
 	fprintf(stderr, "\t%s --find-exec <corefile>\n", prog);
 }
@@ -469,6 +512,11 @@ struct option options[] = {
 		.name		= "check-notes",
 		.has_arg	= 0,
 		.val		= 'c',
+	},
+	{
+		.name		= "check-fd",
+		.has_arg	= 1,
+		.val		= 'd',
 	},
 	{
 		.name		= "print-note",
@@ -494,13 +542,18 @@ int main(int argc, char **argv)
 
 	opts.action = LIST_NOTES;
 
-	while ((opt = getopt_long(argc, argv, "lcp:f", options, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "lcp:fd:", options, NULL))
+			!= -1) {
 		switch (opt) {
 		case 'l':
 			opts.action = LIST_NOTES;
 			break;
 		case 'c':
 			opts.action = CHECK_NOTES;
+			break;
+		case 'd':
+			opts.action = CHECK_FD;
+			opts.fd = optarg;
 			break;
 		case 'p':
 			opts.action = DUMP_NOTE;
