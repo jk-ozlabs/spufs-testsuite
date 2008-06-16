@@ -21,6 +21,8 @@
 obj += 01-spe-get 02-spe-put 03-hugepage-spe-faulted 04-hugepage-ppe-faulted \
        05-schedule-during-fault
 
-05-schedule-during-fault: LDFLAGS += -lpthread
+05-schedule-during-fault: LDFLAGS += -lpthread -lfuse
+05-schedule-during-fault: 05-schedule-during-fault.o ../../lib/slowfs/slowfs.o \
+				     ../../lib/talloc/talloc.o
 
 $(obj): pattern.o

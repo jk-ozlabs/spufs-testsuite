@@ -38,6 +38,8 @@
 #include <test/spu_syscalls.h>
 #include <test/hw.h>
 
+#include <slowfs/slowfs.h>
+
 #define SLOWFS_BINARY "lib/slowfs/slowfs"
 #define SLOWFS_DIR "mnt"
 #define SLOWFS_FILE "mnt/slowfs"
@@ -118,25 +120,11 @@ static uint32_t spe_program[] = {
 	0x00001337, /* stop                           */
 };
 
-
-static void unmount_slowfs(void)
-{
-	int pid;
-
-	pid = fork();
-	if (!pid) {
-		execlp("fusermount", "fusermount", "-u", SLOWFS_DIR, NULL);
-		exit(EXIT_FAILURE);
-	}
-
-	waitpid(pid, NULL, 0);
-
-	rmdir(SLOWFS_DIR);
-}
+static struct slowfs *slowfs;
 
 static int map_slowfs_file(void **map, int *len)
 {
-	int rc, fd, status;
+	int rc, fd;
 	struct stat statbuf;
 
 	rc = mkdir(SLOWFS_DIR, 0755);
@@ -145,23 +133,10 @@ static int map_slowfs_file(void **map, int *len)
 		return rc;
 	}
 
-	rc = fork();
-
-	if (rc < 0) {
-		perror("fork");
-		goto err_umount;
-	}
-
-	if (rc == 0) {
-		execl(SLOWFS_BINARY, SLOWFS_BINARY, SLOWFS_DIR, NULL);
-		exit(EXIT_FAILURE);
-	}
-
-	waitpid(rc, &status, 0);
-
-	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
-		fprintf(stderr, "failed mounting slowfs\n");
-		goto err_umount;
+	slowfs = slowfs_mount(SLOWFS_DIR);
+	if (!slowfs) {
+		fprintf(stderr, "failed to mount slowfs on %s\n", SLOWFS_DIR);
+		return -1;
 	}
 
 	fd = open(SLOWFS_FILE, O_RDONLY);
@@ -193,17 +168,18 @@ static int map_slowfs_file(void **map, int *len)
 err_close:
 	close(fd);
 err_umount:
-	unmount_slowfs();
+	slowfs_unmount(slowfs);
 	return rc;
 
 }
 
 static void unmap_slow_file(void *map, int len)
 {
-	if (len)
+	if (map != MAP_FAILED)
 		munmap(map, len);
 
-	unmount_slowfs();
+	slowfs_unmount(slowfs);
+	rmdir(SLOWFS_DIR);
 }
 
 struct spe_thread_info {
@@ -279,7 +255,6 @@ int main(void)
 	} else {
 		rc = 0;
 	}
-
 
 out_unmap:
 	unmap_slow_file(slow_map, slow_map_len);

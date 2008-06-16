@@ -28,23 +28,22 @@ all: tests benchmarks
 
 .PHONY: tests benchmarks libs
 
-tests benchmarks: bin/run-tests lib/slowfs/slowfs
+tests benchmarks: bin/run-tests libs
 	$(MAKE) -C $@ all
 
 
 bin/run-tests: lib/talloc/talloc.o bin/run-tests.o bin/capabilities.o bin/test.o
 	$(LINK.o) -o $@ $^
 
-libs: lib/talloc/talloc.o
+libs: lib/talloc/talloc.o lib/slowfs/slowfs.o
 
-lib/slowfs/slowfs: CFLAGS += $(shell pkg-config fuse --cflags)
-lib/slowfs/slowfs: LDFLAGS += $(shell pkg-config fuse --libs)
+lib/slowfs/slowfs.o: CFLAGS += $(shell pkg-config fuse --cflags)
 
 clean:
 	cd tests && make clean
 	cd benchmarks && make clean
 	rm -f bin/capabilities bin/run-tests
-	rm -f bin/*.o lib/talloc/talloc.o
+	rm -f bin/*.o lib/talloc/talloc.o lib/slowfs/slowfs.o
 
 check: clean all
 	bin/run-tests

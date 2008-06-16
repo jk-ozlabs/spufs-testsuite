@@ -3,12 +3,28 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <errno.h>
 #include <string.h>
+
+#include <pthread.h>
+
+#include <talloc/talloc.h>
+
 #include <fuse.h>
+#include <fuse_lowlevel.h>
+
 
 #define FILE_SIZE 4096
 static const char *file_name = "/slowfs";
+
+struct slowfs {
+	struct fuse *fuse;
+	struct fuse_chan *chan;
+	char *mountpoint;
+	int fuse_rc;
+	pthread_t pthread;
+};
 
 static int slowfs_getattr(const char *path, struct stat *statbuf)
 {
@@ -74,7 +90,67 @@ static struct fuse_operations ops = {
 	.read		= slowfs_read,
 };
 
-int main(int argc, char *argv[])
+static void *slowfs_fn(void *arg)
 {
-	return fuse_main(argc, argv, &ops, NULL);
+	struct slowfs *slowfs = arg;
+
+	slowfs->fuse_rc = fuse_loop(slowfs->fuse);
+
+	return slowfs;
 }
+
+struct slowfs *slowfs_mount(const char *mountpoint)
+{
+	struct slowfs *slowfs;
+
+	slowfs = talloc(NULL, struct slowfs);
+	if (!slowfs) {
+		perror("talloc");
+		goto out_free;
+	}
+
+	slowfs->mountpoint = talloc_strdup(slowfs, mountpoint);
+	if (!slowfs->mountpoint) {
+		perror("talloc");
+		goto out_free;
+	}
+
+	slowfs->chan = fuse_mount(mountpoint, NULL);
+	if (!slowfs->chan) {
+		perror("fuse_mount");
+		goto out_free;
+	}
+
+	slowfs->fuse = fuse_new(slowfs->chan, NULL, &ops, sizeof(ops), NULL);
+	if (!slowfs->fuse) {
+		perror("fuse_new");
+		goto out_free;
+	}
+
+	if (fuse_daemonize(1)) {
+		perror("fuse_daemonize");
+		goto out_free;
+	}
+
+	if (pthread_create(&slowfs->pthread, NULL, slowfs_fn, slowfs)) {
+		perror("pthread_create");
+		goto out_free;
+	}
+
+	/* fuse_set_signal_handlers() ? */
+
+	return slowfs;
+
+out_free:
+	talloc_free(slowfs);
+	return NULL;
+}
+
+void slowfs_unmount(struct slowfs *slowfs)
+{
+	fuse_exit(slowfs->fuse);
+	fuse_unmount(slowfs->mountpoint, slowfs->chan);
+	pthread_join(slowfs->pthread, NULL);
+	talloc_free(slowfs);
+}
+
