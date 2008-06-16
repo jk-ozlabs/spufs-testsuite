@@ -19,21 +19,23 @@
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 CC=gcc
-CFLAGS=-Wall -Werror -g -O2
+CFLAGS=-Wall -Werror -g -O2 -Ilib/include
 LDFLAGS=
 
 MAKEFLAGS=--no-print-directory
 
 all: tests benchmarks
 
-.PHONY: tests benchmarks
+.PHONY: tests benchmarks libs
 
 tests benchmarks: bin/run-tests lib/slowfs/slowfs
 	$(MAKE) -C $@ all
 
 
-bin/run-tests: bin/talloc/talloc.o bin/run-tests.o bin/capabilities.o bin/test.o
+bin/run-tests: lib/talloc/talloc.o bin/run-tests.o bin/capabilities.o bin/test.o
 	$(LINK.o) -o $@ $^
+
+libs: lib/talloc/talloc.o
 
 lib/slowfs/slowfs: CFLAGS += $(shell pkg-config fuse --cflags)
 lib/slowfs/slowfs: LDFLAGS += $(shell pkg-config fuse --libs)
@@ -42,7 +44,7 @@ clean:
 	cd tests && make clean
 	cd benchmarks && make clean
 	rm -f bin/capabilities bin/run-tests
-	rm -f bin/*.o bin/talloc/talloc.o
+	rm -f bin/*.o lib/talloc/talloc.o
 
 check: clean all
 	bin/run-tests

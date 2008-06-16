@@ -35,7 +35,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "talloc.h"
+#include <talloc/talloc.h>
 
 /* use this to force every realloc to change the pointer, to stress test
    code that might not cope */
