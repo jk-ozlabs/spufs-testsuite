@@ -18,7 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-obj += 01-getpid 02-read
+obj += 01-getpid 02-read 03-read+schedule
 
-02-read: LDFLAGS += -lpthread
+02-read 03-read+schedule: LDFLAGS += -lpthread
 
