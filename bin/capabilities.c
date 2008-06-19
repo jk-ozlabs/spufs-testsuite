@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -54,10 +55,23 @@ static int cap_affinity(void)
 
 static int cap_hugepages(void)
 {
-	struct stat statbuf;
+	char buf;
+	int fd;
 
-	/* todo: might be nice to check that it's mounted where we expect too */
-	return stat("/proc/sys/vm/nr_hugepages", &statbuf) == 0;
+	/* check for the presence of nr_hugepages, and that the number it
+	 * contains is not '0'
+	 *
+	 * todo: might be nice to check that it's mounted where we expect too
+	 */
+	fd = open("/proc/sys/vm/nr_hugepages", O_RDONLY);
+	if (fd < 0)
+		return 0;
+
+	read(fd, &buf, sizeof(buf));
+
+	close(fd);
+
+	return buf != '0';
 }
 
 struct capability {
