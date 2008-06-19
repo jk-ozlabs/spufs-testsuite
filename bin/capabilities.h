@@ -23,6 +23,10 @@
 #ifndef _CAPABILITIES_H
 #define _CAPABILITIES_H
 
+#include <stdio.h>
+
 int cap_available(const char *name);
+
+void print_capabilities(FILE *file);
 
 #endif /* _CAPABILITIES_H */

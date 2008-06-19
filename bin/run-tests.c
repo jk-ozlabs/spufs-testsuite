@@ -42,6 +42,7 @@
 #include <sys/klog.h>
 
 #include "talloc/talloc.h"
+#include "capabilities.h"
 #include "test.h"
 
 
@@ -443,6 +444,11 @@ struct option options[] = {
 		.val = 'b'
 	},
 	{
+		.name = "capabilities",
+		.has_arg = 0,
+		.val = 'p'
+	},
+	{
 		.name = "help",
 		.has_arg = 0,
 		.val = 'h'
@@ -465,7 +471,7 @@ int main(int argc, char **argv)
 	benchmark = 0;
 
 	for (;;) {
-		c = getopt_long(argc, argv, "cbh", options, NULL);
+		c = getopt_long(argc, argv, "cbph", options, NULL);
 		if (c == -1)
 			break;
 
@@ -476,6 +482,9 @@ int main(int argc, char **argv)
 		case 'b':
 			benchmark = 1;
 			break;
+		case 'p':
+			print_capabilities(stdout);
+			return EXIT_SUCCESS;
 		case 'h':
 			usage(argv[0]);
 			return EXIT_SUCCESS;

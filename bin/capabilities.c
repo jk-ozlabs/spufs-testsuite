@@ -63,6 +63,7 @@ static int cap_hugepages(void)
 struct capability {
 	const char *name;
 	int (*fn)(void);
+	int internal;
 	int value;
 	int valid;
 };
@@ -70,11 +71,13 @@ struct capability {
 static struct capability caps[] = {
 	{
 		.name = "always",
-		.fn = cap_always
+		.fn = cap_always,
+		.internal = 1
 	},
 	{
 		.name = "never",
-		.fn = cap_never
+		.fn = cap_never,
+		.internal = 1
 	},
 	{
 		.name = "root",
@@ -115,16 +118,21 @@ int cap_available(const char *name)
 	return 0;
 }
 
-#if 0
 
-void print_all_caps(void)
+void print_capabilities(FILE *file)
 {
 	struct capability *cap;
 
-	for (cap = caps; cap->name; cap++)
-		printf("%s=%d\n", cap->name, get_capability(cap));
+	for (cap = caps; cap->name; cap++) {
+		if (cap->internal)
+			continue;
+
+		fprintf(file, "%-20s: %s\n", cap->name,
+				__cap_available(cap) ? "yes" : "no");
+	}
 }
 
+#if 0
 int print_cap(const char *name)
 {
 	struct capability *cap;
