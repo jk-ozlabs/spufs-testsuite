@@ -29,7 +29,7 @@ then
 	exit 1
 fi
 
-if grep '^spufs ' /proc/mounts
+if grep 'spufs ' /proc/mounts
 then
 	echo "spufs still mounted, after 'umount /spu'?'" >&2
 	exit 1
@@ -41,7 +41,7 @@ then
 	exit 1
 fi
 
-if ! grep '^spufs ' /proc/mounts
+if ! grep 'spufs ' /proc/mounts
 then
 	echo "Mounted spufs, but can't find it in /proc/mounts"
 	exit 1
