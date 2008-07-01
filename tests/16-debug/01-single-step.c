@@ -37,7 +37,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
-#include <linux/user.h>
 #include <errno.h>
 
 #include <test/spu_syscalls.h>
