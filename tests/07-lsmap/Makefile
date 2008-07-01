@@ -20,6 +20,6 @@
 
 
 obj += 01-ppe-setup 02-ppe-setup-all 03-ppe-setup-all-mmap 04-ppe-running \
-       05-size 06-seek-end
+       05-size 06-seek-end 07-seek-end+read
 
 04-ppe-running: LDFLAGS+=-lpthread
