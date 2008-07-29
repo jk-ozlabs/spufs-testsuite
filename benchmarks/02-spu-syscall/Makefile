@@ -1,6 +1,6 @@
 # Testsuite for the Linux SPU filesystem
 #
-# Copyright (C) IBM Corporation, 2007
+# Copyright (C) IBM Corporation, 2008
 #
 # Author: Jeremy Kerr <jk@ozlabs.org>
 #
@@ -18,19 +18,4 @@
 # along with this program; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-dirs = 01-spu_create 02-spu-syscall
-
-# we want the sub-makefiles to use Makefile.lib, which includes the
-# test dir's Makefile
-MAKEFILES=../../lib/Makefile.lib
-
-all: $(dirs)
-
-$(dirs) : % : %/Makefile
-	@$(MAKE) -C $@ all
-
-clean:
-	for d in $(dirs); do ($(MAKE) -C $$d clean); done
-
-.PHONY: all clean $(dirs)
-
+obj += 01-syscalls
