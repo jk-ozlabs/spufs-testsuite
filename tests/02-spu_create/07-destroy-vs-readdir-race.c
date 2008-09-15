@@ -58,7 +58,7 @@ static void do_readdirs(void)
 	struct dirent dirents[10];
 
 	dir = open("/spu", O_RDONLY);
-	assert(dir);
+	assert(dir >= 0);
 
 	for (;;) {
 		rc = getdents(dir, dirents, sizeof(dirents));
