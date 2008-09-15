@@ -419,6 +419,9 @@ static void print_summary(struct test **tests)
 		if ((*test)->result == TEST_NOTRUN)
 			continue;
 
+		if ((*test)->ignored)
+			continue;
+
 		n_tests++;
 		if ((*test)->result == TEST_PASSED)
 			n_pass++;

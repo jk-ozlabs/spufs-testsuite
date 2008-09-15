@@ -35,6 +35,7 @@ struct test {
 	int expected_sig;
 	int timeout;
 	int disabled;
+	int ignored;
 
 	struct required_cap {
 		char *cap;

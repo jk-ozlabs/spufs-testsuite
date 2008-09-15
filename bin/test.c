@@ -48,6 +48,7 @@ struct test *test_create(void *ctx, char *path, int type)
 	/* set defaults */
 	test->expected_rc = 0;
 	test->disabled = 0;
+	test->ignored = 0;
 	test->caps_required = NULL;
 	test->n_caps_required = 0;
 
@@ -169,6 +170,11 @@ static void handle_testconf_token(struct test *test, char *tok)
 	/* handle flags */
 	if (streq(tok, "disabled")) {
 		test->disabled = 1;
+		return;
+	}
+
+	if (streq(tok, "ignored")) {
+		test->ignored = 1;
 		return;
 	}
 
