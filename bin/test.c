@@ -238,6 +238,7 @@ void test_read_config(struct test *test)
 
 	for (c = buf; c && *c;) {
 		char *newline;
+		int match = 0;
 
 		/* skip whitespace */
 		while (isspace(*c))
@@ -248,16 +249,25 @@ void test_read_config(struct test *test)
 		/* if it's a comment, skip this line */
 		if (*c == '#') {
 
-		/* we only want lines begining with "file:" */
+		/* we only want lines begining with "file:" ... */
 		} else if (!strncmp(c, filepattern, fp_len)) {
+			c += fp_len;
+			match = 1;
+
+		/* ... or *:, which matches all tests in this dir: */
+		} else if (!strncmp(c, "*:", 2)) {
+			c += 2;
+			match = 1;
+
+		}
+
+		if (match) {
 			char *tok;
 			char *delim = " \t";
 
 			/* null-terminate this line */
 			if (newline)
 				*newline = '\0';
-
-			c += fp_len;
 
 			for (tok = strtok(c, delim); tok;
 					tok = strtok(NULL, delim))
