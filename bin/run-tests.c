@@ -211,7 +211,7 @@ static int dmesg_check()
 	return (strstr(buf, "Badness") != NULL);
 }
 
-static int run_test(struct test *test, int dir_fd)
+static int run_test(struct test *test, int dir_fd, int enable_timeout)
 {
 	int rc, pipe_fds[2];
 	struct timeval tv, timeout_tv;
@@ -341,7 +341,7 @@ static int run_test(struct test *test, int dir_fd)
 
 		/* see if we've timed-out */
 		gettimeofday(&tv, NULL);
-		if (timercmp(&tv, &timeout_tv, >)) {
+		if (enable_timeout && timercmp(&tv, &timeout_tv, >)) {
 			kill(test->run.pid, SIGALRM);
 		}
 
@@ -355,7 +355,8 @@ static int run_test(struct test *test, int dir_fd)
 	return rc;
 }
 
-static int run_tests(struct test **tests, int cont_on_failure)
+static int run_tests(struct test **tests, int cont_on_failure,
+		int enable_timeout)
 {
 	struct test **test;
 	char working_dir[256];
@@ -389,7 +390,7 @@ static int run_tests(struct test **tests, int cont_on_failure)
 
 	for (test = tests; *test; test++) {
 
-		rc |= run_test(*test, dirfd);
+		rc |= run_test(*test, dirfd, enable_timeout);
 
 		if (rc && !cont_on_failure)
 			return -1;
@@ -402,7 +403,7 @@ static int run_tests(struct test **tests, int cont_on_failure)
 
 static void usage(const char *progname)
 {
-	fprintf(stderr, "usage: %s [--benchmark] [--continue] [testdir]\n",
+	fprintf(stderr, "usage: %s [--benchmark] [--continue] [--no-timeout] [testdir]\n",
 			progname);
 }
 
@@ -454,6 +455,11 @@ struct option options[] = {
 		.val = 'h'
 	},
 	{
+		.name = "no-timeout",
+		.has_arg = 0,
+		.val = 't'
+	},
+	{
 		.name = NULL,
 		.val = 0
 	}
@@ -462,16 +468,17 @@ struct option options[] = {
 
 int main(int argc, char **argv)
 {
+	int benchmark, cont, enable_timeout;
 	struct test **tests, **benchmarks;
 	char *testdir;
-	int benchmark, cont;
 	int c, rc;
 
 	cont = 0;
 	benchmark = 0;
+	enable_timeout = 1;
 
 	for (;;) {
-		c = getopt_long(argc, argv, "cbph", options, NULL);
+		c = getopt_long(argc, argv, "cbtph", options, NULL);
 		if (c == -1)
 			break;
 
@@ -481,6 +488,9 @@ int main(int argc, char **argv)
 			break;
 		case 'b':
 			benchmark = 1;
+			break;
+		case 't':
+			enable_timeout = 0;
 			break;
 		case 'p':
 			print_capabilities(stdout);
@@ -510,7 +520,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	rc = run_tests(tests, cont);
+	rc = run_tests(tests, cont, enable_timeout);
 
 	print_summary(tests);
 	talloc_free(tests);
@@ -520,7 +530,7 @@ int main(int argc, char **argv)
 
 	printf("--- Running benchmarks\n");
 	benchmarks = find_tests(BENCHMARK_DIR, TEST_TYPE_BENCHMARK);
-	run_tests(benchmarks, 0);
+	run_tests(benchmarks, 0, 0);
 	talloc_free(benchmarks);
 
 	return 0;
