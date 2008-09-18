@@ -57,7 +57,7 @@ int main(void)
 	assert(ctx >= 0);
 
 	ls_fd = openat(ctx, "mem", O_WRONLY);
-	assert(ls_fd);
+	assert(ls_fd >= 0);
 
 	rc = write(ls_fd, spe_program, sizeof(spe_program));
 	assert(rc == sizeof(spe_program));
