@@ -24,6 +24,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -83,7 +84,7 @@ int main(void)
 	assert(pids);
 
 	for (i = 0; i < n_procs; i++) {
-		names[i] = malloc(30);
+		names[i] = malloc(strlen(fmt) + 20);
 		sprintf(names[i], fmt, i);
 	}
 
