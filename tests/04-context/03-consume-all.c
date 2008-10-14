@@ -25,7 +25,6 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #include <assert.h>
@@ -36,17 +35,6 @@
 #include <test/hw.h>
 
 /* create two processes to run contexts on all SPEs */
-
-static int count_spes(void)
-{
-	struct stat statbuf;
-	int rc;
-
-	rc = stat("/sys/devices/system/spu", &statbuf);
-	assert(!rc);
-
-	return statbuf.st_nlink - 2;
-}
 
 #if 0
 	.long 0x0

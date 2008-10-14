@@ -22,7 +22,23 @@
 #ifndef TEST_HW_H
 #define TEST_HW_H
 
+#include <sys/stat.h>
 
 #define LS_SIZE	0x40000
+#define PSMAP_SIZE 0x20000
+
+#define PSMAP_SIGNAL1_OFFSET 0x1400c
+#define PSMAP_SIGNAL2_OFFSET 0x1c00c
+
+static inline int count_spes(void)
+{
+	struct stat statbuf;
+	int rc;
+
+	rc = stat("/sys/devices/system/spu", &statbuf);
+	assert(!rc);
+
+	return statbuf.st_nlink - 2;
+}
 
 #endif /* TEST_HW_H */
