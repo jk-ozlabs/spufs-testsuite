@@ -74,6 +74,25 @@ static int cap_hugepages(void)
 	return buf != '0';
 }
 
+static int cap_sputrace(void)
+{
+	struct stat statbuf;
+
+	/* we need to be root to access sputrace */
+	if (!cap_root())
+		return 0;
+
+	if (stat("/proc/sputrace", &statbuf) == 0)
+		return 1;
+
+	/* ok, we may be able to load the sputrace module and retry */
+	system("/sbin/modprobe sputrace");
+
+	return stat("/proc/sputrace", &statbuf) == 0;
+}
+
+
+
 struct capability {
 	const char *name;
 	int (*fn)(void);
@@ -104,6 +123,10 @@ static struct capability caps[] = {
 	{
 		.name = "hugepages",
 		.fn = cap_hugepages
+	},
+	{
+		.name = "sputrace",
+		.fn = cap_sputrace
 	},
 	{
 		.name = NULL
