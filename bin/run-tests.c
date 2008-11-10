@@ -312,6 +312,11 @@ static int run_test(struct test *test, int dir_fd, int enable_timeout)
 							test->expected_rc);
 					rc = -1;
 
+				} else if (test->expected_sig) {
+					test_fail(test, "expected sig %d",
+							test->expected_sig);
+					rc = -1;
+
 				} else if (dmesg_check()) {
 					test_fail(test, "dmesg");
 					rc = -1;

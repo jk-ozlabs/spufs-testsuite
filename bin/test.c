@@ -47,6 +47,7 @@ struct test *test_create(void *ctx, char *path, int type)
 
 	/* set defaults */
 	test->expected_rc = 0;
+	test->expected_sig = 0;
 	test->disabled = 0;
 	test->ignored = 0;
 	test->caps_required = NULL;
