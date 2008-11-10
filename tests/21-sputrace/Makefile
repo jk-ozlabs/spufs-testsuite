@@ -18,4 +18,4 @@
 # along with this program; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-obj += 01-sputrace-read 02-permissions
+obj += 01-sputrace-read 02-permissions 03-multiple-open
